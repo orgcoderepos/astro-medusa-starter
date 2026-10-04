@@ -4,11 +4,22 @@ import { sdk } from "./lib/sdk";
 
 const MEDUSA_BACKEND_URL = import.meta.env.PUBLIC_MEDUSA_BACKEND_URL;
 const DEFAULT_REGION = import.meta.env.DEFAULT_REGION;
+const REGION_FETCH_TIMEOUT_MS = 3000;
 
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
   regionMapUpdated: Date.now(),
 };
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(
+      () => reject(new Error(`Timed out after ${ms} ms`)),
+      ms,
+    );
+    promise.then(resolve, reject).finally(() => clearTimeout(timeout));
+  });
+}
 
 function isStaticOrInternalPath(pathname: string) {
   // Astro/Vite internal and image optimization routes
@@ -57,7 +68,10 @@ async function getRegionMap() {
 
   if (!isCacheValid) {
     try {
-      const { regions } = await sdk.store.region.list();
+      const { regions } = await withTimeout(
+        sdk.store.region.list(),
+        REGION_FETCH_TIMEOUT_MS,
+      );
 
       if (!regions?.length) {
         throw new Error(
@@ -74,6 +88,11 @@ async function getRegionMap() {
       regionMapCache.regionMapUpdated = Date.now();
     } catch (error) {
       console.error(error);
+
+      if (regionMap.size) {
+        return regionMap;
+      }
+
       throw new Error("Failed to fetch regions from Medusa.");
     }
   }
@@ -105,6 +124,10 @@ async function getCountryCode(pathname: string) {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  if (context.isPrerendered) {
+    return next();
+  }
+
   // Never redirect non-page requests (assets, dev internals, etc.)
   if (isStaticOrInternalPath(context.url.pathname)) {
     return next();
@@ -121,7 +144,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = context.url.pathname;
   const search = context.url.search;
 
-  const countryCode = await getCountryCode(pathname);
+  let countryCode: string | undefined;
+
+  try {
+    countryCode = await getCountryCode(pathname);
+  } catch (error) {
+    console.error(error);
+    countryCode = DEFAULT_REGION;
+  }
 
   const urlHasCountryCode =
     (countryCode && pathname.split("/")[1] === countryCode) ||
