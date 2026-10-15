@@ -2,12 +2,11 @@
 import Layout from "@layouts/Layout.astro";
 import { getRegion } from "@lib/data/regions";
 import { listProducts } from "@lib/data/products";
-import { getRegionParams } from "@lib/params/region-params";
 import ProductPreview from "@modules/products/components/product-preview/ProductPreview.astro";
 import { ProductFilters } from "@modules/products/components/product-filters/ProductFilters";
 import { buildFilterGroups } from "@lib/utils/product-filters";
 
-export const getStaticPaths = getRegionParams;
+export const prerender = false;
 
 const { countryCode } = Astro.params;
 

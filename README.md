@@ -25,8 +25,8 @@ Static-first architecture. Interactive where it matters. Zero compromise on perf
 │                                                 │
 │   ┌──────────┐  ┌──────────┐  ┌──────────────┐  │
 │   │  Static  │  │  Astro   │  │    React     │  │
-│   │   HTML   │──│Middleware│──│   Islands    │  │
-│   │  (SSG)   │  │ (Region) │  │ (Cart, Nav)  │  │
+│   │ + SSR    │──│Middleware│──│   Islands    │  │
+│   │  HTML    │  │ (Region) │  │ (Cart, Nav)  │  │
 │   └──────────┘  └──────────┘  └──────┬───────┘  │
 │                                       │         │
 └───────────────────────────────────────┼─────────┘
@@ -43,8 +43,8 @@ Static-first architecture. Interactive where it matters. Zero compromise on perf
 
 **Static where possible, dynamic where necessary:**
 
-- Product pages, store listing, and landing page are statically generated at build time
-- Medusa webhooks trigger a re-deploy when products are created, updated, or deleted — keeping static pages in sync
+- Store listings and product pages render on demand from Medusa, so new products appear on the next page load
+- Other pages remain statically generated; the catalog stays in sync without webhook-triggered re-deploys
 - Product variant availability is refreshed client-side to prevent stale inventory data
 - Cart, checkout, and navigation hydrate as interactive React islands
 - Middleware handles region detection and country-based routing

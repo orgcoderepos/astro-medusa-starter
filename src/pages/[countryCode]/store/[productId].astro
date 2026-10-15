@@ -2,13 +2,12 @@
 import Layout from "@layouts/Layout.astro";
 import { retrieveProduct } from "@lib/data/products";
 import { getRegion } from "@lib/data/regions";
-import { getProductParams } from "@lib/params/product-params";
 import { getProductPrice } from "@lib/utils/get-product-price";
 import ImageCarouselWrapper from "@modules/products/components/product-details/image-carousel/ImageCarouselWrapper.astro";
 import { ProductActions } from "@modules/products/components/product-details/ProductActions";
 import ProductAttributes from "@modules/products/components/product-details/ProductAttributes.astro";
 
-export const getStaticPaths = getProductParams;
+export const prerender = false;
 
 const { countryCode, productId } = Astro.params;
 
@@ -30,6 +29,10 @@ try {
 } catch (e) {
   error = e instanceof Error ? e : new Error("Unknown error");
   console.error(error);
+}
+
+if (!product) {
+  Astro.response.status = 404;
 }
 
 const {
