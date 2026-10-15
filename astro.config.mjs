@@ -18,7 +18,7 @@ const medusaBackendDomain = PUBLIC_MEDUSA_BACKEND_URL
 // https://astro.build/config
 export default defineConfig({
   adapter: cloudflare({
-    imageService: "compile",
+    imageService: { build: "compile", runtime: "passthrough" },
   }),
   integrations: [react()],
   server: {
