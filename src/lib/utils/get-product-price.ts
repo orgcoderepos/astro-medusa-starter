@@ -35,10 +35,8 @@ export const getPricesForVariant = (variant: ProductVariant) => {
 
 export const getProductPrice = ({
   productVariants,
-  variantId,
 }: {
   productVariants: ProductVariant[] | null;
-  variantId?: string;
 }) => {
   const cheapestPrice = () => {
     if (!productVariants?.length) {
@@ -61,24 +59,7 @@ export const getProductPrice = ({
     return getPricesForVariant(cheapestVariant);
   };
 
-  const variantPrice = () => {
-    if (!variantId) {
-      return null;
-    }
-
-    const variant = productVariants?.find(
-      (variant) => variant.id === variantId || variant.sku === variantId,
-    );
-
-    if (!variant) {
-      return null;
-    }
-
-    return getPricesForVariant(variant);
-  };
-
   return {
     cheapestPrice: cheapestPrice(),
-    variantPrice: variantPrice(),
   };
 };
