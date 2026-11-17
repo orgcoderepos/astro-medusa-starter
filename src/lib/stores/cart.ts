@@ -221,13 +221,6 @@ export function closeCartSidebar(): void {
 }
 
 /**
- * Open cart sidebar
- */
-export function openCartSidebar(): void {
-  $isCartSidebarOpen.set(true);
-}
-
-/**
  * Add shipping method to cart
  */
 export async function addShippingMethod(
