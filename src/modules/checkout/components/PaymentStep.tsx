@@ -8,7 +8,6 @@ interface PaymentStepProps {
   cart: StoreCart;
   countryCode: string;
   mode: "edit" | "inactive";
-  onEdit?: () => void;
 }
 
 const CardIcon = () => (
