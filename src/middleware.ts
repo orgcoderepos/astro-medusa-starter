@@ -154,8 +154,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const urlHasCountryCode =
-    (countryCode && pathname.split("/")[1] === countryCode) ||
-    pathname.split("/")[1].includes(`${countryCode}/`);
+    countryCode && pathname.split("/")[1] === countryCode;
 
   if (urlHasCountryCode) {
     return next();
@@ -165,7 +164,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const queryString = search || "";
 
-  if (!urlHasCountryCode && countryCode) {
+  if (countryCode) {
     redirectUrl = `${origin}/${countryCode}${redirectPath}${queryString}`;
     return context.redirect(redirectUrl, 307);
   }
